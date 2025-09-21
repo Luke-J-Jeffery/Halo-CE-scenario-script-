@@ -1,0 +1,204 @@
+(script static void pelican_insertion
+    (object_create_anew ins_1)
+    (ai_place marine_squad/intro_marine_squad)
+    (ai_braindead marine_squad/intro_marine_squad true)
+    (vehicle_load_magic ins_1 "rider" (ai_actors marine_squad/intro_marine_squad))
+    (object_teleport ins_1 ins_1)
+    (recording_play_and_hover ins_1 pelican_animation)
+    (sound_impulse_start "sound\music\music\a_walk_in_the_woods\a_walk_in_the_woods" none 1)
+    (sleep 820)
+    (ai_follow_target_players marine_squad)
+    (vehicle_unload ins_1 "")
+    (ai_braindead marine_squad/intro_marine_squad false)
+    (sleep 380)
+    (vehicle_hover ins_1 0)
+    (recording_play_and_delete ins_1 pelican_exit_2)
+)
+    
+(script startup covinsertion
+(sleep_until (volume_test_objects cov_drop (players)))
+(wake cov_insertion)
+)
+(script dormant cov_insertion
+    
+    (object_create_anew cov_ins)
+    (unit_close cov_ins)
+    (ai_place cov_ins_squad/cov_drop_squad)
+    (vehicle_load_magic cov_ins "passenger" (ai_actors cov_ins_squad/cov_drop_squad))
+    (object_teleport cov_ins cov_ins1)
+    (recording_play_and_hover cov_ins cov_ins7)
+    (sleep 500)
+    (unit_open cov_ins)
+    (vehicle_unload cov_ins "")
+    (sleep 30)
+    (ai_place cov_ins_squad/magic_elite)
+    (sleep 100)
+    (unit_close cov_ins)
+    (sleep 80) 
+    (vehicle_hover cov_ins 0)
+    (recording_play_and_delete cov_ins cov_ins_exit2)
+    (game_save)   
+) 
+    
+ (script dormant inv_elite
+ (cinematic_show_letterbox true)
+ (cinematic_set_title invs_title)
+ (sleep 10)
+ (sound_impulse_stop "sound\music\music\a_walk_in_the_woods\a_walk_in_the_woods")
+ (sleep 10)
+ (sound_looping_start "levels\b30\music\b30_03" none 1)
+ (sleep 150)
+ (cinematic_show_letterbox false)
+  )
+
+(script startup cov2ndencounter
+(sleep_until (volume_test_objects cov_2nd_enc_trigger (players)))
+(wake cov_2nd_enc)
+)
+
+ (script dormant cov_2nd_enc
+ (game_save)
+ (ai_place cov_2nd_encounter)
+ (vehicle_load_magic left_banshee "" (ai_actors cov_2nd_encounter/banshee_pilot_l))
+ (vehicle_load_magic right_banshee "" (ai_actors cov_2nd_encounter/banshee_pilot_r))
+ (vehicle_load_magic c_turret_v2 "" (ai_actors cov_2nd_encounter/grunt_c_turret))
+ (vehicle_load_magic wraith_second_encounter "driver" (ai_actors cov_2nd_encounter/wraith_driver_2))
+ (object_teleport left_banshee banshee_spawn_l)
+ (object_teleport right_banshee banshee_spawn_r)
+ (sound_impulse_stop "sound\music\music\a_walk_in_the_woods\a_walk_in_the_woods")
+ (sound_impulse_start "sound\music\music\on_a_pale_horse\on_a_pale_horse" none 1)
+ (cinematic_set_title cov_2nd_enc)
+ (cinematic_show_letterbox true)
+ (sleep 100)
+ (cinematic_show_letterbox false)
+ )
+
+
+ (script dormant reinforce
+ (object_create_anew reinforce_p)
+ (ai_place marine_squad/reinforce_marine)
+ (vehicle_load_magic reinforce_p "rider" (ai_actors marine_squad/reinforce_marine))
+ (recording_play_and_hover reinforce_p reinforce_intro)
+ (sleep 500)
+ (vehicle_hover reinforce_p 0)
+ (sleep 10)
+ (vehicle_unload reinforce_p "")
+ (sleep 100)
+ (recording_play_and_delete reinforce_p reinforce_exit)
+ ) 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ (script startup reinforce_trig
+ (begin
+ (sleep 200)
+ (sleep_until (volume_test_objects spawn_trig (players)))
+ (sleep_until (< (ai_living_count marine_squad) 3))
+ (wake reinforce)
+ )
+ )
+
+ 
+ 
+
+
+
+
+ 
+ 
+
+ (script startup hunter_enc
+ (begin
+ (sleep_until (volume_test_objects hunter_trigger (players)))
+ (ai_place Hunter_enc)
+ (ai_magically_see_players Hunter_enc)
+ )
+ )
+ 
+(script startup open_door_with_panel
+    ;; Wait until the control panel is activated
+    (sleep_until (> (device_get_position door_control) 0) 1)
+    ;; Open the door
+    (device_set_position last_door 1)
+)
+
+(script dormant last_encounter
+(ai_place last_enc)
+(game_save)
+(sound_looping_start "levels\c40\music\c40_051" none 1)
+(cinematic_show_letterbox true)
+(cinematic_set_title last_chapter)
+(sleep 120)
+(cinematic_show_letterbox false)
+(ai_magically_see_players last_enc)  
+)
+
+
+
+
+(script startup lastenc
+(sleep_until (> (device_get_position door_control) 1) 0)
+(wake Last_encounter)
+)
+
+
+(script startup game_end
+(sleep_until (> (device_get_position end_game) 0) 1)
+(sound_looping_stop "levels\c40\music\c40_051")
+(fade_out 1 1 1 15)
+(sleep 15)
+(game_won)
+)
+ 
+
+
+
+
+
+ 
+(script startup invs_elites_dead
+ (begin 
+(sleep_until (< (ai_living_count inv_elites/inv_elite) 1))
+(sleep 120)
+(sound_looping_stop "levels\b30\music\b30_03")
+ )
+)
+
+
+
+
+
+
+
+ (script startup invelite
+ (sleep_until (volume_test_objects invis_elites (players)))
+ (wake inv_elite)
+ ) 
+
+
+
+(script static void chapter_title
+  (cinematic_show_letterbox true)
+  (cinematic_set_title intro) 
+  (sleep 200) 
+  (cinematic_show_letterbox false)
+)
+ 
+(script startup pelicaninsertion
+    (pelican_insertion)
+)
+
+(script startup chaptertitle
+  (chapter_title)
+)
+
+(script static void grunt_turret 
+  (vehicle_load_magic c_turret_v "" (ai_actors cov_1st_encounter/c_turret))
+)
+(script startup gruntturret
+  (grunt_turret)
+) 
