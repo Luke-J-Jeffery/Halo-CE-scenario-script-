@@ -1,0 +1,515 @@
+;;recordings and intro;;
+
+(script startup Pelican1_ins
+   (sound_impulse_start "sound\music\music\on_a_pale_horse\on_a_pale_horse" none 1)
+   (cinematic_show_letterbox true)
+   (show_hud false)
+   (player_enable_input false)
+   (cinematic_set_title intro) 
+   (fade_in 1 1 1 300)
+   
+
+   
+   (unit_enter_vehicle (player0) ins1 "P-riderLF")
+   (object_teleport ins1 Pelican_ins1)
+   (object_teleport ins2 Pelican_ins2)
+   (ai_place Marines_pelican1)
+   (ai_braindead Marines_pelican1 true)
+   (vehicle_load_magic Wraith1 "driver" (ai_actors 1st_beach_enc/Wraith_driver))
+   
+
+   (ai_force_active 1st_beach_enc true)
+   (ai_magically_see_players 1st_beach_enc)
+   (ai_force_active 1st_beach_enc/Wraith_driver true)
+   (vehicle_load_magic ins1 "rider" (ai_actors Marines_pelican1/Marines_pelican))
+   (vehicle_load_magic ins2 "rider" (ai_actors Marines_pelican1/Marines_pelican2))
+   (sleep 10)
+   (ai_magically_see_players 1st_beach_enc/Wraith_driver)
+
+   (recording_play_and_hover ins1 Pelican1_ins)
+   (sleep 50)
+   (recording_play_and_hover ins2 Pelican_ins2_2)
+   (sound_impulse_start "sound\dialog\b40\b40_040_sarge" none 1)
+   (sleep 200)
+   (sound_impulse_start "sound\dialog\a30\a30_040_cortana" none 1)
+   (sleep 417)
+   (sound_impulse_start "sound\dialog\b40\b40_100_cortana" none 1)  
+   (cinematic_show_letterbox false) 
+   (show_hud true)
+   (unit_exit_vehicle (player0))
+   (player_enable_input true)
+   (vehicle_unload ins1 "")
+   (sound_impulse_start "sound\dialog\b30\b30_insert_050_sarge2" none 1)
+   (vehicle_unload ins2 "")
+   (ai_follow_target_unit marines_pelican1 (player0))
+   (ai_braindead marines_pelican1 false)
+   (sleep 380)
+   (vehicle_hover ins1 0)
+   (vehicle_hover ins2 0)
+   
+   (recording_play_and_delete ins1 ins1_takeoff)
+   (recording_play_and_delete ins2 Ins2_takeoff)
+   (ai_go_to_vehicle 1st_beach_enc/grunt_turret beach_turret "")
+   (game_save_no_timeout)
+)
+ 
+     
+   
+ (script dormant cov_insertion 
+    
+    (object_create_anew tunnel_cov_ins)
+    (object_create_anew tunnel_ghost)
+    (object_create_anew tunnel_ghost2)
+    (unit_close tunnel_cov_ins)
+    (ai_place big_tunnel)
+    (vehicle_load_magic tunnel_cov_ins "passenger" (ai_actors big_tunnel/spirit_drop))
+    (vehicle_load_magic tunnel_ghost "driver" (ai_actors big_tunnel/ghost_driver1))
+    (vehicle_load_magic tunnel_ghost2 "driver" (ai_actors big_tunnel/ghost_driver2))
+    (unit_enter_vehicle tunnel_ghost tunnel_cov_ins "cargo_ghost01")
+    (unit_enter_vehicle tunnel_ghost2 tunnel_cov_ins "cargo_ghost03")
+    (object_teleport tunnel_cov_ins cov_ins_intro)
+    (recording_play_and_hover tunnel_cov_ins cov_ins_intro)
+    (sleep 500)
+    (unit_open tunnel_cov_ins)
+    (vehicle_unload tunnel_cov_ins "")
+    (unit_exit_vehicle tunnel_ghost)
+    (unit_exit_vehicle tunnel_ghost2)
+    (sleep 100)
+    (unit_close tunnel_cov_ins)
+    (sleep 80) 
+    (vehicle_hover tunnel_cov_ins 0)
+    (recording_play_and_delete tunnel_cov_ins cov_ins_outro)
+    (ai_magically_see_players big_tunnel)
+ 
+ )
+
+
+ (script dormant life_pod_entry
+ (object_create lifepod)
+ (object_teleport lifepod lifepod)
+ (recording_play_and_delete lifepod lifepod_entry2)
+ (sleep 100)
+ (sound_impulse_start "sound\dialog\a30\a30_310_cortana" none 1)
+ (sleep 340)
+ (effect_new "effects\explosions\large explosion" life_pod_explosion)
+ (sleep 10)
+ (effect_new "effects\explosions\large explosion" life_pod_explosion2)
+ (sleep 10)
+ (effect_new "effects\explosions\large explosion" life_pod_explosion3)
+ (object_create life_pod_crashed)
+ (ai_place life_pod_survivors)
+ )
+ 
+ 
+ 
+
+(script startup life_pod
+(sleep_until (volume_test_objects life_pod_trig (players)) 1)
+(wake life_pod_entry)
+)
+
+ 
+   
+(script dormant lifepod_enc
+
+	(object_create dead_marine_1)
+	(object_create dead_marine_2)
+	(object_create dead_marine_3)
+	(objects_attach pod_of_death "rider left b" dead_marine_1 "")
+	(objects_attach pod_of_death "rider right c" dead_marine_2 "")
+	(objects_attach pod_of_death "rider right a" dead_marine_3 "")
+	(custom_animation dead_marine_1 cinematics\animations\marines\x30\x30 death_pose_1 false)
+	(custom_animation dead_marine_2 cinematics\animations\marines\x30\x30 death_pose_2 false)
+	(custom_animation dead_marine_3 cinematics\animations\marines\x30\x30 death_pose_1 false)
+)
+	
+
+
+	
+(script startup lifepod
+  (sleep_until (volume_test_objects lifepod_trig (players)))
+  (wake lifepod_enc)
+)
+
+
+
+ ;;; encounters ;;;
+
+ (script startup cov_big_tunnel
+ (sleep_until 
+   (or
+ (volume_test_objects big_tunnel (players))
+ (volume_test_objects big_tunnel2 (players))
+ (volume_test_objects big_tunnel_trig_2 (players))
+   )
+  1)
+ (wake cov_insertion)
+ )
+ 
+ (script dormant tunnel_invis
+(ai_place first_tunnel)
+)
+
+(script startup tunnel_enc
+(sleep_until (volume_test_objects tunnel_trig (players)) 1)
+(wake tunnel_invis)
+) 
+
+(global boolean red_base_ecountered_first false)
+(global boolean g_blue_base_spawned false)
+
+(script dormant blue_base_enc
+  (ai_set_deaf blue_base/commander true)
+  (ai_place blue_base)
+  (set g_blue_base_spawned true)
+)
+(script dormant blue_base_defeated
+  (sleep_until
+    (and
+      
+      g_blue_base_spawned
+      (= (ai_living_count blue_base) 0)
+    )
+    1
+  )
+  (if (= red_base_ecountered_first true)
+      (begin
+         
+         (sound_impulse_start "sound\dialog\b30\b30_020_cortana" none 1)
+         (game_save)
+      )
+      (begin
+      
+  (sleep 40)
+  (game_save)
+  (sound_impulse_start "sound\dialog\b30\b30_020_cortana" none 1)
+  (object_create_anew ins1)
+  (object_create_anew jeep)
+  (object_teleport ins1 cov_ins_intro)
+  (unit_enter_vehicle jeep ins1 "cargo")
+  (recording_play_and_hover ins1 pelican_jeep_intro2)
+  (vehicle_hover ins1 0)
+  (sleep 100)
+  (sound_impulse_start "sound\dialog\b30\b30_030_pilot" none 1)
+  (sleep 550)
+  (unit_exit_vehicle jeep)
+  (sleep 20)
+  (vehicle_hover ins1 0)
+  (recording_play_and_delete ins1 pelican_jeep_out)
+
+
+  )
+  )
+)
+  
+
+(script startup blue_base
+  (sleep_until (volume_test_objects tunnel_trig (players)) 1)
+  (wake blue_base_enc)
+  (wake blue_base_defeated)
+)
+
+ (script dormant ramp_enco
+(ai_place ramp_enc)
+)
+
+(script startup ramp_encounter
+   (sleep_until
+  (or
+(volume_test_objects ramp_trig (players))
+(volume_test_objects hunter_trig_ramp3 (players))
+  )
+   )
+   (wake ramp_enco)
+)
+
+(script dormant hunter_encounter
+(ai_place Hunters)
+)
+(script startup Hunter_enc
+    (sleep_until
+        (or
+            (volume_test_objects hunter_trig_ramp (players))
+            (volume_test_objects hunter_trig_ramp2d (players))
+        )
+    1)
+    (wake hunter_encounter)
+    (game_save)
+)
+
+(script dormant topsideenc
+(ai_place topside_enc)
+
+(sound_impulse_start "sound\music\music\a_walk_in_the_woods\a_walk_in_the_woods" none 1)
+(cinematic_show_letterbox true)
+(cinematic_set_title top_side) 
+(game_save)
+(sleep 200) 
+(cinematic_show_letterbox false)
+(ai_command_list topside_enc/squads_block_3 sgt_johnson_dead)
+)
+
+(script dormant banshee_encounter
+(ai_place banshee_enc)
+(object_create_anew banshee_1)
+(object_create_anew banshee_2)
+(sleep 30)
+(vehicle_load_magic banshee_1 "" (ai_actors banshee_enc/banshee_pilot_1))
+(vehicle_load_magic banshee_2 "" (ai_actors banshee_enc/banshee_pilot_2))
+(sleep 60)
+(object_teleport banshee_1 banshee_spawn_1)
+(object_teleport banshee_2 banshee_spawn_2)
+(ai_magically_see_players banshee_enc)
+)
+
+(script startup top_side_trig
+(sleep_until (volume_test_objects topside_trig (players))1)
+(wake topsideenc)
+(sleep 10)
+(sleep_until (volume_test_objects banshee_encounter_trig (players))1)
+(wake banshee_encounter)
+)
+
+(global boolean red_base_spawned false) 
+
+(script dormant red_base_encounter
+(ai_place red_base_enc)
+(ai_set_deaf red_base_enc/red_base_enc_inside true)
+(set red_base_spawned true)
+(set red_base_ecountered_first true)
+)
+
+(script dormant red_base_spec_ops
+(ai_place cov_spec_ops_enc)
+(object_create_anew spec_ops_drop)
+(vehicle_hover spec_ops_drop 0)
+(unit_open spec_ops_drop)
+(sleep 220)
+(unit_close spec_ops_drop)
+(recording_play_and_delete spec_ops_drop spec_ops_ins)
+)
+
+(script startup redbase
+(sleep_until 
+ (or
+ (volume_test_objects red_base_enc_trig (players))
+ (volume_test_objects red_base_enc_arch (players))
+ (volume_test_objects big_ramp_trig (players))
+ )
+ 1)
+ 
+ (wake red_base_encounter)
+ (wake big_ramp_enchounter)
+
+ (sound_impulse_start "sound\dialog\a30\A30_480_Cortana" none 1)
+ (sleep 120)
+ (sound_impulse_start "sound\dialog\a30\A30_500_Cortana" none 1)
+ (game_save)
+)
+
+(script dormant big_ramp_enchounter
+(ai_place big_ramp_enc)
+)
+
+(script startup big_ramp
+(sleep_until 
+(or
+(volume_test_objects big_ramp_trig (players))
+(volume_test_objects red_base_enc_arch (players))
+(volume_test_objects red_base_enc_trig (players))
+)
+1)
+(wake big_ramp_enchounter)
+)
+
+
+(script startup flood_intro
+(sleep_until (volume_test_objects bsp_switch (players))1)
+(if (= (structure_bsp_index) 1)
+(begin
+(object_teleport (player0) player_bsp2_spawn)
+(fade_in 1 1 1 200)
+(ai_place Marine_flood)
+(cinematic_show_letterbox true)
+(cinematic_set_title Flood)
+(sound_looping_start "levels\a10\music\a10_06" none 1)
+(device_set_position_immediate  bsp_2_door 0)
+(ai_place hiding_cov)
+(ai_set_deaf hiding_cov true)
+(vehicle_load_magic c_turret_left "" (ai_actors hiding_cov/grunt_turret_left))
+(vehicle_load_magic c_turret_right "" (ai_actors hiding_cov/grunt_turret_right))
+(sleep 200)
+(cinematic_show_letterbox false)
+(sleep 110)
+(effect_new "effects\explosions\large explosion" door_explosion)
+(sleep 30)
+(effect_new "effects\explosions\large explosion" door_explosion)
+(device_set_position jammed_door 0.4)
+(effect_new "effects\explosions\large explosion" forerunner_explosion)
+(sleep 20)
+(effect_new "effects\explosions\large explosion" forerunner_explosion)
+(object_destroy Beam)
+(ai_braindead Marine_flood true)
+    )
+)
+)
+
+
+(script startup open_door_with_panel
+    
+    (sleep_until (> (device_get_position door_control) 0) 1) 
+  
+    
+    (wake flood_encounters) 
+    (wake Flood_encounters_2)
+    (wake flood_encounter_3)
+)
+
+;;marine dialog;;;
+(script dormant marine_dialog
+(ai_braindead Marine_flood false)
+
+  ;; Wait for crazy marine
+  (sleep_until (> (list_count (ai_actors Marine_flood/crazy_marine)) 0))
+  (sound_impulse_start
+    "sound\dialog\c10\c10_150_crazymarine"
+    (list_get (ai_actors Marine_flood/crazy_marine) 0)
+    1
+  )
+
+  (sleep 150)
+
+  ;; Wait for aussie marine
+  (sleep_until (> (list_count (ai_actors Marine_flood/marine_aussie)) 0))
+  (sound_impulse_start
+    "sound\dialog\c10\c10_191_aussie"
+    (list_get (ai_actors Marine_flood/marine_aussie) 0)
+    1
+  )
+  (sleep 190)
+  (ai_command_list Marine_flood/marine_aussie marine_move)
+  (ai_command_list Marine_flood/crazy_marine marine_move)
+  
+) 
+
+
+
+(script startup marine_trigger
+(sleep_until (volume_test_objects marine_dialog_trig (players)) 1)
+(wake marine_dialog)
+)
+
+
+
+
+;;;Flood encounters;;;
+(global boolean flood_ramp_spawned false)
+
+(script dormant Flood_encounters
+(sleep_until (volume_test_objects flood_creep (players)) 1)
+(ai_place flood_1st_enc)
+(sound_looping_stop "levels\a10\music\a10_06")
+(sound_impulse_start "sound\music\music\devils_monsters\devils_monsters" none 1)
+(ai_magically_see_players flood_1st_enc)
+(sleep 10)
+(sleep_until (volume_test_objects flood_trig_1 (players)) 1)
+(set flood_ramp_spawned true)
+(ai_place flood_ramp)
+(sleep 10)
+(sleep_until
+    (and
+      flood_ramp_spawned
+      (= (ai_living_count flood_ramp) 5)
+    )
+    1
+  )
+(ai_place flood_2nd)
+(sleep_until (volume_test_objects cortana_coms_dialog (players)) 1)
+(sound_impulse_start "sound\dialog\d20\d20_insert_010_cortana" none 1)
+)
+
+(script dormant Flood_encounters_2
+(sleep_until (volume_test_objects flood_dirt_cave (players)) 1)
+(ai_place flood_3rd)
+(ai_magically_see_players flood_3rd)
+)
+
+(script dormant flood_encounter_3
+(sleep_until (volume_test_objects flood_lower_ramp_trig (players)) 1)
+(ai_place flood_lower_ramp)
+(ai_magically_see_players flood_lower_ramp)
+(wake teleporter_control)
+)
+
+;;;end of the flood encounters;;;
+(script dormant teleporter_control
+(device_set_position flood_exit_control 0)
+(sleep 30)
+(sleep_until (device_get_position flood_exit_control) 1)
+(wake Flood_exit)
+)
+
+(script dormant Flood_exit
+(object_create teleporter_exit)
+(sleep_until (volume_test_objects exit_teleporter_trigger (players)))
+(object_teleport (player0) exit_teleporter_red_base)
+(fade_in 1 1 1 200)
+(wake red_base_spec_ops)
+)
+
+;;;end of level script and triggers;;;
+(script startup end_of_level
+   (sleep_until
+      (and
+         
+            g_blue_base_spawned 
+            red_base_spawned
+         
+         (= (ai_living_count blue_base) 0) 
+         (= (ai_living_count red_base_enc) 0)
+      )
+   1)
+(wake pelican_exit) 
+)
+
+    
+    
+    
+
+
+
+  
+
+
+(script dormant pelican_exit
+(sound_impulse_start "sound\dialog\a30\a30_610_cortana" none 1 )
+(object_create_anew ins1)
+(object_create_anew ins2)
+(object_teleport ins1 Pelican_ins1)
+(object_teleport ins2 Pelican_ins2)
+(recording_play_and_hover ins1 pelican_ins1_extraction)
+(sleep 50)
+(recording_play_and_hover ins2 pelican_ins2_extraction)
+(sleep 600)
+(activate_nav_point_object "default_red" (player0) ins1 0)
+(sleep_until (volume_test_objects outro_trig (players)))
+(ai_go_to_vehicle Marines_pelican1/Marines_pelican ins1 "rider")
+(ai_go_to_vehicle Marines_pelican1/Marines_pelican2 ins2 "rider")
+(sleep_until (= 0 (ai_going_to_vehicle ins1)) 15)
+(sleep_until (= 0 (ai_going_to_vehicle ins2)) 15)
+(sleep_until (volume_test_objects outro_trig (players)))
+(vehicle_hover ins1 0)
+(vehicle_hover ins2 0)
+(player_enable_input false)
+(recording_play_and_delete ins1 ins1_takeoff)
+(recording_play_and_delete ins2 Ins2_takeoff)
+(fade_in 1 1 1 300)
+(cinematic_show_letterbox true)
+(camera_control true)
+(camera_set outro 0)
+(sound_impulse_start "sound\music\music\brothers_in_arms\brothers_in_arms" none 1)
+(sleep 650)
+(fade_in 1 1 1 300)
+(game_won)
+)
+
